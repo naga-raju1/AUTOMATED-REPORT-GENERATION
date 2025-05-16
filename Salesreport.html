@@ -1,0 +1,43 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+
+# Sample data
+data = {
+    'Month': ['Jan', 'Feb', 'Mar', 'Apr'],
+    'Sales': [100, 120, 140, 130]
+}
+df = pd.DataFrame(data)
+
+# Generate a simple plot
+plt.figure(figsize=(6, 4))
+plt.plot(df['Month'], df['Sales'], marker='o')
+plt.title('Monthly Sales')
+plt.xlabel('Month')
+plt.ylabel('Sales')
+plt.grid(True)
+plt.savefig('sales_plot.png')
+plt.close()
+
+# Create PDF
+styles = getSampleStyleSheet()
+report = SimpleDocTemplate("Sales_Report.pdf", pagesize=A4)
+elements = []
+
+# Add Title
+elements.append(Paragraph("Monthly Sales Report", styles['Title']))
+elements.append(Spacer(1, 12))
+
+# Add a summary
+summary = f"Total Sales: {df['Sales'].sum()} units<br/>Average Sales: {df['Sales'].mean():.2f} units"
+elements.append(Paragraph(summary, styles['Normal']))
+elements.append(Spacer(1, 12))
+
+# Add the plot image
+elements.append(Image("sales_plot.png", width=400, height=300))
+
+# Build PDF
+report.build(elements)
+print("Report generated successfully!")
